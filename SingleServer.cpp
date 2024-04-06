@@ -106,15 +106,18 @@ public:
         return 0;
     }
 
-    void stop() {
+    void exit() {
         if (server_process) {
             server_process->terminate();
             server_process->wait();
-            server_process.reset();
-            stdin_stream.reset();
-            stdout_pipe.reset();
-            stderr_pipe.reset();
+            cleanup();
         }
+    }
+
+    void stop() {
+        command("stop");
+        server_process->wait();
+        cleanup();
     }
 
     void command(const string &cmd) {
@@ -140,5 +143,12 @@ private:
                 }
             }
         );
+    }
+
+    void cleanup() {
+        server_process.reset();
+        stdin_stream.reset();
+        stdout_pipe.reset();
+        stderr_pipe.reset();
     }
 };
