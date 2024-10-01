@@ -1,23 +1,20 @@
 cmake_minimum_required(VERSION 3.28)
-project(tmsmt_core LANGUAGES CXX VERSION 0.0.1)
+project(tmsmt_core LANGUAGES CXX VERSION 0.0.2)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_library(tmsmt_core SHARED SingleServer.cpp)
+add_library(tmsmt_core SHARED SingleServer.cpp SingleServer.hpp)
+add_library(tmsmt_core_static STATIC SingleServer.cpp SingleServer.hpp)
 
-set_target_properties(tmsmt_core PROPERTIES OUTPUT_NAME "tmsmt_core")
+set_target_properties(tmsmt_core PROPERTIES OUTPUT_NAME "tmsmt_core_dyn")
+set_target_properties(tmsmt_core_static PROPERTIES OUTPUT_NAME "tmsmt_core")
 
-# Find Boost
-find_package(Boost REQUIRED)
+find_package(Boost CONFIG REQUIRED COMPONENTS filesystem process)
 
-# If you need specific Boost components, list them like so:
-# find_package(Boost REQUIRED COMPONENTS filesystem system)
-
-# Include Boost's headers
 include_directories(${Boost_INCLUDE_DIRS})
 
-# Check if we are on Windows and if so, link against ws2_32
 if(WIN32)
     target_link_libraries(tmsmt_core PRIVATE ws2_32)
+    target_link_libraries(tmsmt_core_static PRIVATE ws2_32)
 endif()
